@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>Student Finance Tracker (RWF)</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header>
+        <h1>Student Finance Tracker</h1>
+        <nav aria-label="Main">
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#records">Records</a></li>
+                <li><a href="#add-edit">Add / Edit</a></li>
+                <li><a href="#settings">Settings</a></li>
+            </ul>
+        </nav>
+        <button id="theme-toggle" aria-label="Switch between light and dark theme">🌙</button>
+    </header>
+
+    <main id="main-content">
+        <section id="about" aria-labelledby="about-heading">
+            <h2 id="about-heading">About</h2>
+            <p>Track your daily expenses in RWF, set monthly caps, and convert to USD/EUR.</p>
+            <p>Created by <a href="https://github.com/alvinmutangana">Alvin Mutangana</a> &mdash; <a
+                    href="mailto:a.mutangana@alustudent.com">a.mutangana@alustudent.com</a></p>
+        </section>
+
+        <section id="dashboard" aria-labelledby="dashboard-heading">
+            <h2 id="dashboard-heading">Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Records</h3>
+                    <p id="total-records" aria-live="polite">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Total Spent</h3>
+                    <p id="total-amount" aria-live="polite">RWF 0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Top Category</h3>
+                    <p id="top-category" aria-live="polite">-</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Monthly Cap</h3>
+                    <p id="cap-status" aria-live="assertive">RWF 0 / RWF 0</p>
+                </div>
+            </div>
+
+            <div class="trend">
+                <h3>Last 7 Days Spending</h3>
+                <div class="trend-bars" id="trend-bars" aria-label="Bar chart of daily spending"></div>
+            </div>
+
+            <div id="cap-message" role="status" aria-live="polite"></div>
+        </section>
+
+        <section id="records" aria-labelledby="records-heading">
+            <h2 id="records-heading">Records</h2>
+
+            <div class="search-sort">
+                <div class="search-group">
+                    <label for="search">Regex Search:</label>
+                    <input type="text" id="search" placeholder="e.g., (coffee|tea) or \b(\w+)\s+\1\b">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="case-insensitive" checked> Case insensitive
+                    </label>
+                </div>
+                <div class="sort-buttons">
+                    <button id="sort-description">Sort by Description ↕</button>
+                    <button id="sort-amount">Sort by Amount ↕</button>
+                    <button id="sort-date">Sort by Date ↕</button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="records-table">
+                    <caption>Expense records – use search and sort to filter</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Description</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="records-body"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="monthly-categories" aria-labelledby="monthly-heading">
+            <h2 id="monthly-heading">EXPENSE THIS MONTH</h2>
+            <div id="category-monthly-cards" class="category-cards"></div>
+        </section>
+
+        <section id="add-edit" aria-labelledby="form-heading">
+            <h2 id="form-heading">Add / Edit Transaction</h2>
+            <form id="transaction-form" novalidate>
+                <input type="hidden" id="edit-id" value="">
+
+                <div class="form-group">
+                    <label for="description">Description:</label>
+                    <input type="text" id="description" required aria-describedby="desc-error">
+                    <div id="desc-error" class="error" role="alert"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount (RWF):</label>
+                    <input type="number" id="amount" step="0.01" min="0" required aria-describedby="amt-error">
+                    <div id="amt-error" class="error" role="alert"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category:</label>
+                    <input type="text" id="category" list="category-options" required aria-describedby="cat-error">
+                    <datalist id="category-options">
+                        <option value="Food">
+                        <option value="Books">
+                        <option value="Transport">
+                        <option value="Entertainment">
+                        <option value="Fees">
+                        <option value="Other">
+                    </datalist>
+                    <div id="cat-error" class="error" role="alert"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">Date (YYYY-MM-DD):</label>
+                    <input type="date" id="date" required aria-describedby="date-error">
+                    <div id="date-error" class="error" role="alert"></div>
+                </div>
+
+                <button type="submit">Save Transaction</button>
+                <button type="button" id="clear-form">Clear</button>
+            </form>
+        </section>
+
+        <section id="settings" aria-labelledby="settings-heading">
+            <h2 id="settings-heading">Settings</h2>
+
+            <fieldset>
+                <legend>Categories</legend>
+                <div id="categories-list"></div>
+                <div class="add-category">
+                    <label for="new-category">New category:</label>
+                    <input type="text" id="new-category">
+                    <button id="add-category">Add</button>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Currencies & Rates (Base: RWF)</legend>
+                <div id="currencies-list">
+                </div>
+                <div class="add-currency">
+                    <label for="new-currency-code">Add currency:</label>
+                    <input type="text" id="new-currency-code" placeholder="e.g., GBP" maxlength="3"
+                        class="currency-code-input">
+                    <label for="new-currency-rate">Rate (1 unit = ? RWF):</label>
+                    <input type="number" id="new-currency-rate" step="1" min="0" value="1000"
+                        class="currency-rate-input">
+                    <button id="add-currency">Add</button>
+                </div>
+                <label for="display-currency">Display in:</label>
+                <select id="display-currency">
+                    <option value="RWF">RWF</option>
+                </select>
+            </fieldset>
+
+            <fieldset>
+                <legend>Monthly Cap (RWF)</legend>
+                <label for="monthly-cap">Cap amount:</label>
+                <input type="number" id="monthly-cap" step="100" min="0" value="500000">
+            </fieldset>
+
+            <fieldset>
+                <legend>Data Management</legend>
+                <button id="export-json">Export as JSON</button>
+                <label for="import-file">Import JSON:</label>
+                <input type="file" id="import-file" accept=".json">
+                <button id="import-json">Import</button>
+            </fieldset>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Student Finance Tracker</p>
+    </footer>
+
+    <script type="module" src="scripts/main.js"></script>
+</body>
+
+</html>

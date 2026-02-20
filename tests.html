@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Validator Tests</title>
+    <style>
+        body { font-family: sans-serif; padding: 2rem; }
+        .pass { color: green; }
+        .fail { color: red; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Regex Validator Tests</h1>
+    <pre id="output">Running tests...</pre>
+
+    <script type="module">
+        import {
+            validateDescription,
+            validateAmount,
+            validateDate,
+            validateCategory
+        } from '../scripts/validators.js';
+
+        const output = document.getElementById('output');
+        let results = [];
+
+        function assert(condition, message) {
+            results.push({ condition, message });
+        }
+
+        output.textContent = '';
+
+        assert(validateDescription('Hello world') === '', 'Valid description');
+        assert(validateDescription('  Leading space') !== '', 'Leading space');
+        assert(validateDescription('Trailing space ') !== '', 'Trailing space');
+        assert(validateDescription('Double  space') !== '', 'Double space');
+        assert(validateDescription('the the test') !== '', 'Duplicate words (advanced)');
+        assert(validateDescription('Single') === '', 'Short description');
+
+        assert(validateAmount('12.50') === '', 'Valid amount 12.50');
+        assert(validateAmount('0.99') === '', 'Valid amount 0.99');
+        assert(validateAmount('12.') !== '', 'Missing decimals');
+        assert(validateAmount('-5') !== '', 'Negative');
+        assert(validateAmount('1000') === '', 'Whole number');
+        assert(validateAmount('0.001') !== '', 'More than 2 decimals');
+
+        assert(validateDate('2025-09-29') === '', 'Valid date');
+        assert(validateDate('2025-13-01') !== '', 'Invalid month');
+        assert(validateDate('2025-02-30') !== '', 'Invalid day');
+        assert(validateDate('2025/09/29') !== '', 'Wrong separator');
+        assert(validateDate('2025-09-29T12:00') !== '', 'Includes time');
+
+        assert(validateCategory('Food') === '', 'Valid category');
+        assert(validateCategory('Extra-Curricular') === '', 'Hyphen allowed');
+        assert(validateCategory('Books & More') !== '', 'Ampersand not allowed');
+        assert(validateCategory('  Books') !== '', 'Leading space');
+        assert(validateCategory('Digital-Art') === '', 'Hyphen in middle');
+        assert(validateCategory('Math 101') !== '', 'Numbers not allowed');
+
+        let passCount = 0, failCount = 0;
+        results.forEach(r => {
+            if (r.condition) {
+                output.innerHTML += `✅ ${r.message}\n`;
+                passCount++;
+            } else {
+                output.innerHTML += `❌ ${r.message}\n`;
+                failCount++;
+            }
+        });
+        output.innerHTML += `\n---\nPassed: ${passCount} / Failed: ${failCount}`;
+    </script>
+</body>
+</html>

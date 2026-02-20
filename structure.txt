@@ -1,0 +1,15 @@
+student-finance-tracker/
+├── index.html
+├── styles/
+│   └── main.css
+├── scripts/
+│   ├── main.js
+│   ├── storage.js
+│   ├── state.js
+│   ├── ui.js
+│   ├── validators.js
+│   └── search.js
+├── tests/
+│   └── tests.html
+├── seed.json
+└── README.md
