@@ -3,7 +3,7 @@
 A responsive, accessible expense tracker built with vanilla HTML/CSS/JS. Base currency: RWF, with support for any user‑added currency.
 
 ## Live Demo (GitHub Pages)
-https://alvinmutangana.github.io/Student-Finance-Tracker/
+[https://alvinmutangana.github.io/student-finance-tracker/](https://alvinmutangana.github.io/student-finance-tracker/)
 
 ## Features
 - Add, edit, delete expenses
